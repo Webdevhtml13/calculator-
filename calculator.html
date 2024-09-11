@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resistor Color Code Calculator</title>
+<style>
+  body {
+    background-image: url('1.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  input {
+    padding: 5px;
+    margin: 5px;
+  }
+  button {
+    padding: 8px 20px;
+    margin: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+   h1{
+     font-size:50px;
+     color:white;
+   }
+   label{
+     font:30px;
+     color:white;
+   }
+   input{
+     font-size:50px;
+     height: 8vw;
+     width:40vw;
+   }
+   button{
+     font-size:30px;
+   }
+   div{
+     color:white;
+     font-size:40px;
+   }
+</style>
+</head>
+<body>
+<h1>Resistor Color Code Calculator</h1>
+<div>
+ 
+  <div id="result"></div>
+<div id="tolerance"></div>
+<div id="maxTolerance"></div>
+<div id="minTolerance"></div>
+</div>
+  <button onclick="calculateResistance()">Calculate</button><br>
+  <label for="firstColor">First Color:</label><br>
+  <input type="text" id="firstColor" size="30" required><br>
+  
+  <label for="secondColor">Second Color:</label><br>
+  <input type="text" id="secondColor" required size="40"><br>
+  
+  <label for="thirdColor">Third Color:</label><br>
+  <input type="text" id="thirdColor" required><br>
+  
+  <label for="fourthColor">Fourth Color:</label><br>
+  <input type="text" id="fourthColor" required><br>
+  
+
+
+
+<script>
+  function colortodigit(shin) {
+    const digit = {
+      'black': 0,
+      'brown': 1,
+      'red': 2,
+      'orange': 3,
+      'yellow': 4,
+      'green': 5,
+      'blue': 6,
+      'violet': 7,
+      'gray': 8,
+      'white': 9
+    };
+    return digit[shin.toLowerCase()];
+  }
+
+  function colorofmultiplier(shin) {
+    const multiplier = {
+      'black': 1,
+      'brown': 10,
+      'red': 100,
+      'orange': 1000,
+      'yellow': 10000,
+      'green': 100000,
+      'blue': 1000000,
+      'violet': 10000000,
+      'gray': 100000000,
+      'white': 1000000000,
+      'gold' : 0.01,
+      'silver' : 0.1
+    };
+    return multiplier[shin.toLowerCase()];
+  }
+
+  function colortotolerance(shin) {
+    const tolerance = {
+      'gold': 5,
+      'silver': 10
+    };
+    return tolerance[shin.toLowerCase()];
+  }
+
+  function resistance(first, second, third, fourth) {
+    const firstcolor = colortodigit(first);
+    const secondcolor = colortodigit(second);
+    const thirdcolor = colorofmultiplier(third);
+    const fourthcolor = colortotolerance(fourth);
+    let resistanceVal = (parseFloat(firstcolor * 10 + secondcolor)) * thirdcolor;
+    
+    let unit = 'ohms';
+    
+    if (resistanceVal >= 1000000000) {
+        resistanceVal /= 1000000000; // convert to gigaohms
+        unit = 'giga ohms';
+    } else if (resistanceVal >= 1000000) {
+        resistanceVal /= 1000000; // convert to megaohms
+        unit = 'mega ohms';
+    } else if (resistanceVal >= 1000) {
+        resistanceVal /= 1000; // convert to kiloohms
+        unit = 'kilo ohms';
+    }
+    
+    if (fourthcolor !== undefined) {
+        document.getElementById('tolerance').innerText = `Tolerance: ±${fourthcolor}%`;
+        const maxTolerance = resistanceVal * (1 + fourthcolor/100);
+        const minTolerance = resistanceVal * (1 - fourthcolor/100);
+        document.getElementById('maxTolerance').innerText = `Maximum Tolerance: ${maxTolerance} ${unit}`;
+        document.getElementById('minTolerance').innerText = `Minimum Tolerance: ${minTolerance} ${unit}`;
+        return `Nominal Value: ${resistanceVal} ${unit}`;
+    }
+  }
+
+  function calculateResistance() {
+    const first = document.getElementById('firstColor').value;
+    const second = document.getElementById('secondColor').value;
+    const third = document.getElementById('thirdColor').value;
+    const fourth = document.getElementById('fourthColor').value;
+  
+    const total = resistance(first, second, third, fourth);
+    document.getElementById('result').innerText = total;
+  }
+</script>
+</body>
+</html>
